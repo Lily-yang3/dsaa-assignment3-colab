@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "assignment3-pipeline"
+version = "0.1.0"
+description = "Self-alignment with instruction backtranslation pipeline for DSAA Assignment 3."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "accelerate>=1.4.0",
+  "bitsandbytes>=0.45.3; platform_system != 'Windows'",
+  "datasets>=3.4.1",
+  "huggingface_hub>=0.29.1",
+  "peft>=0.14.0",
+  "safetensors>=0.5.3",
+  "sentencepiece>=0.2.0",
+  "transformers>=4.51.0,<5.0.0",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]

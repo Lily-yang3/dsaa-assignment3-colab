@@ -1,0 +1,51 @@
+{
+  "seed": 42,
+  "model_name": "Qwen/Qwen3-1.7B",
+  "dataset_name": "timdettmers/openassistant-guanaco",
+  "dataset_split": "train",
+  "train_subset": null,
+  "val_ratio": 0.02,
+  "max_seq_length": 512,
+  "max_target_tokens": 160,
+  "output_dir": "artifacts/backward_model",
+  "push_to_hub": false,
+  "hub_model_id": "",
+  "hub_private": false,
+  "runtime": {
+    "preferred_device": null,
+    "load_in_4bit": true,
+    "gradient_checkpointing": true,
+    "trust_remote_code": true,
+    "attn_implementation": null
+  },
+  "lora": {
+    "r": 16,
+    "alpha": 32,
+    "dropout": 0.05,
+    "bias": "none",
+    "target_modules": [
+      "q_proj",
+      "k_proj",
+      "v_proj",
+      "o_proj",
+      "gate_proj",
+      "up_proj",
+      "down_proj"
+    ]
+  },
+  "training": {
+    "num_train_epochs": 1,
+    "per_device_train_batch_size": 1,
+    "per_device_eval_batch_size": 1,
+    "gradient_accumulation_steps": 16,
+    "learning_rate": 0.0002,
+    "weight_decay": 0.0,
+    "warmup_ratio": 0.03,
+    "lr_scheduler_type": "cosine",
+    "logging_steps": 10,
+    "save_steps": 100,
+    "eval_steps": 100,
+    "save_total_limit": 2
+  }
+}
+

@@ -1,0 +1,28 @@
+{
+  "seed": 42,
+  "judge_model_name": "Qwen/Qwen3-1.7B",
+  "judge_adapter_path": null,
+  "input_path": "artifacts/augmentation/candidate_pairs.jsonl",
+  "output_curated_path": "artifacts/curation/curated_pairs.jsonl",
+  "output_rejected_path": "artifacts/curation/rejected_pairs.jsonl",
+  "score_threshold": 4,
+  "min_curated_size": 50,
+  "show_examples": 5,
+  "push_to_hub": false,
+  "hub_dataset_id": "",
+  "hub_private": false,
+  "runtime": {
+    "preferred_device": null,
+    "load_in_4bit": true,
+    "trust_remote_code": true,
+    "attn_implementation": null
+  },
+  "generation": {
+    "batch_size": 2,
+    "max_new_tokens": 80,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "do_sample": false,
+    "repetition_penalty": 1.0
+  }
+}
