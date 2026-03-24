@@ -1,0 +1,7 @@
+{
+  "score_threshold": 4,
+  "min_curated_size": 50,
+  "fallback_applied": true,
+  "curated_size": 50,
+  "rejected_size": 100
+}

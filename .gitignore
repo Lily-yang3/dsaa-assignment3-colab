@@ -5,9 +5,6 @@ __pycache__/
 .pytest_cache/
 .ipynb_checkpoints/
 .DS_Store
-artifacts/backward_model/
-artifacts/final_model/
-artifacts/augmentation/
-artifacts/curation/
-artifacts/logs/
-
+.venv/
+src/*.egg-info/
+artifacts/modelscope/
