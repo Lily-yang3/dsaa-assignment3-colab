@@ -8,3 +8,4 @@ __pycache__/
 .venv/
 src/*.egg-info/
 artifacts/modelscope/
+artifacts/**/checkpoint-*/

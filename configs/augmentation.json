@@ -15,7 +15,7 @@
     "attn_implementation": null
   },
   "generation": {
-    "batch_size": 2,
+    "batch_size": 4,
     "max_new_tokens": 64,
     "temperature": 0.7,
     "top_p": 0.9,

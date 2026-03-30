@@ -1,0 +1,9 @@
+{
+  "source_path": "/mnt/dataY/lmy/DSAA/assignment3/3.25/artifacts/curation/curated_pairs.jsonl",
+  "filter_rule": "score >= 4",
+  "rows": 34,
+  "score_counts": {
+    "4": 26,
+    "5": 8
+  }
+}

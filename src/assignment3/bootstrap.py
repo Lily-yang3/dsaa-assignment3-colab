@@ -9,7 +9,7 @@ def _pick_gpu_from_nvidia_smi() -> str | None:
         result = subprocess.run(
             [
                 "nvidia-smi",
-                "--query-gpu=index,memory.free",
+                "--query-gpu=index,memory.free,utilization.gpu",
                 "--format=csv,noheader,nounits",
             ],
             check=True,
@@ -19,24 +19,29 @@ def _pick_gpu_from_nvidia_smi() -> str | None:
     except Exception:
         return None
 
-    best_index: str | None = None
-    best_free_memory = -1
+    candidates: list[tuple[int, int, str]] = []
     for raw_line in result.stdout.splitlines():
         line = raw_line.strip()
         if not line:
             continue
         parts = [part.strip() for part in line.split(",")]
-        if len(parts) != 2:
+        if len(parts) != 3:
             continue
-        index, free_memory_text = parts
+        index, free_memory_text, utilization_text = parts
         try:
             free_memory = int(free_memory_text)
+            utilization = int(utilization_text)
         except ValueError:
             continue
-        if free_memory > best_free_memory:
-            best_index = index
-            best_free_memory = free_memory
-    return best_index
+        candidates.append((utilization, -free_memory, index))
+
+    if not candidates:
+        return None
+
+    low_utilization = [candidate for candidate in candidates if candidate[0] <= 10]
+    pool = low_utilization if low_utilization else candidates
+    pool.sort()
+    return pool[0][2]
 
 
 def pin_best_visible_gpu() -> str | None:
@@ -52,4 +57,3 @@ def pin_best_visible_gpu() -> str | None:
     if best_gpu is not None:
         os.environ["CUDA_VISIBLE_DEVICES"] = best_gpu
     return best_gpu
-

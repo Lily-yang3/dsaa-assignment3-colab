@@ -79,6 +79,7 @@ def main() -> None:
         max_target_tokens=config["max_target_tokens"],
         output_dir=str(ROOT / config["output_dir"]),
         seed=config["seed"],
+        resume_from_checkpoint=resolve_local_reference(ROOT, config.get("resume_from_checkpoint")),
     )
 
     save_metadata(

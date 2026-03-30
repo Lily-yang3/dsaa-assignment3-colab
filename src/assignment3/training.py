@@ -8,7 +8,7 @@ from typing import Any
 
 import torch
 from torch.utils.data import Dataset
-from transformers import Trainer, TrainingArguments
+from transformers import EarlyStoppingCallback, Trainer, TrainingArguments
 
 from assignment3.models import count_trainable_parameters, load_tokenizer, load_training_model
 from assignment3.runtime import ensure_parent_dir, get_device_info, seed_everything, write_json
@@ -143,6 +143,7 @@ def build_trainer(
             max_target_tokens=max_target_tokens,
         )
 
+    has_eval = eval_dataset is not None
     device_info = get_device_info(runtime_config.get("preferred_device"))
     optim = "paged_adamw_8bit" if runtime_config.get("load_in_4bit", True) and device_info.cuda_available else "adamw_torch"
     training_args_kwargs = {
@@ -167,15 +168,36 @@ def build_trainer(
         "gradient_checkpointing": runtime_config.get("gradient_checkpointing", True),
         "dataloader_pin_memory": device_info.cuda_available,
         "optim": optim,
+        "logging_strategy": "steps",
+        "save_strategy": "steps",
     }
-    strategy_value = "steps" if eval_dataset is not None else "no"
+    strategy_value = "steps" if has_eval else "no"
     training_args_signature = inspect.signature(TrainingArguments.__init__)
     if "evaluation_strategy" in training_args_signature.parameters:
         training_args_kwargs["evaluation_strategy"] = strategy_value
     else:
         training_args_kwargs["eval_strategy"] = strategy_value
 
+    if has_eval:
+        load_best_model_at_end = training_config.get("load_best_model_at_end", True)
+        save_steps = training_args_kwargs["save_steps"]
+        eval_steps = training_args_kwargs["eval_steps"]
+        if load_best_model_at_end and save_steps != eval_steps:
+            raise ValueError("save_steps must equal eval_steps when load_best_model_at_end is enabled.")
+        training_args_kwargs["load_best_model_at_end"] = load_best_model_at_end
+        training_args_kwargs["metric_for_best_model"] = training_config.get("metric_for_best_model", "eval_loss")
+        training_args_kwargs["greater_is_better"] = training_config.get("greater_is_better", False)
+
     training_args = TrainingArguments(**training_args_kwargs)
+    callbacks = []
+    early_stopping_patience = training_config.get("early_stopping_patience")
+    if has_eval and early_stopping_patience is not None:
+        callbacks.append(
+            EarlyStoppingCallback(
+                early_stopping_patience=int(early_stopping_patience),
+                early_stopping_threshold=float(training_config.get("early_stopping_threshold", 0.0)),
+            )
+        )
 
     trainer = Trainer(
         model=model,
@@ -183,6 +205,7 @@ def build_trainer(
         train_dataset=train_dataset,
         eval_dataset=eval_dataset,
         data_collator=SupervisedDataCollator(tokenizer),
+        callbacks=callbacks,
     )
     return model, tokenizer, trainer
 
@@ -198,6 +221,7 @@ def train_and_save(
     max_target_tokens: int,
     output_dir: str,
     seed: int,
+    resume_from_checkpoint: str | None = None,
 ) -> tuple[Any, Any, dict[str, Any]]:
     seed_everything(seed)
     Path(output_dir).mkdir(parents=True, exist_ok=True)
@@ -214,16 +238,38 @@ def train_and_save(
         output_dir=output_dir,
     )
 
-    train_result = trainer.train()
+    train_result = trainer.train(resume_from_checkpoint=resume_from_checkpoint)
+    eval_metrics: dict[str, Any] = {}
+    if val_examples:
+        eval_metrics = trainer.evaluate()
     trainer.save_model(output_dir)
     tokenizer.save_pretrained(output_dir)
 
     metrics = dict(train_result.metrics)
     metrics["train_examples"] = len(train_examples)
     metrics["val_examples"] = len(val_examples)
+    metrics.update(eval_metrics)
+
+    train_logs = [entry for entry in trainer.state.log_history if "loss" in entry]
+    if train_logs:
+        metrics["last_logged_train_loss"] = train_logs[-1]["loss"]
+        metrics["best_logged_train_loss"] = min(entry["loss"] for entry in train_logs)
+
+    eval_logs = [entry for entry in trainer.state.log_history if "eval_loss" in entry]
+    if eval_logs:
+        metrics["last_logged_eval_loss"] = eval_logs[-1]["eval_loss"]
+        metrics["best_logged_eval_loss"] = min(entry["eval_loss"] for entry in eval_logs)
+
+    if trainer.state.best_metric is not None:
+        metrics["best_eval_loss"] = trainer.state.best_metric
+    if trainer.state.best_model_checkpoint is not None:
+        metrics["best_model_checkpoint"] = trainer.state.best_model_checkpoint
 
     metrics_path = ensure_parent_dir(Path(output_dir) / "train_metrics.json")
     metrics_path.write_text(json.dumps(metrics, indent=2) + "\n")
+    if eval_metrics:
+        eval_metrics_path = ensure_parent_dir(Path(output_dir) / "eval_metrics.json")
+        eval_metrics_path.write_text(json.dumps(eval_metrics, indent=2) + "\n")
     return model, tokenizer, metrics
 
 

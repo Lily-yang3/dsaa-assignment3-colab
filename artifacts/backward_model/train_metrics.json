@@ -1,10 +1,20 @@
 {
-  "train_runtime": 8307.1273,
-  "train_samples_per_second": 1.162,
-  "train_steps_per_second": 0.073,
-  "total_flos": 2.8192660941182976e+16,
-  "train_loss": 1.6979503039492676,
-  "epoch": 1.0,
-  "train_examples": 9650,
-  "val_examples": 196
+  "train_runtime": 2228.0567,
+  "train_samples_per_second": 8.397,
+  "train_steps_per_second": 0.525,
+  "total_flos": 6.85569649585152e+16,
+  "train_loss": 0.16981892218956582,
+  "epoch": 2.0,
+  "train_examples": 9354,
+  "val_examples": 492,
+  "eval_loss": 1.4129048585891724,
+  "eval_runtime": 117.2359,
+  "eval_samples_per_second": 4.197,
+  "eval_steps_per_second": 2.098,
+  "last_logged_train_loss": 1.2387,
+  "best_logged_train_loss": 1.0884,
+  "last_logged_eval_loss": 1.4129048585891724,
+  "best_logged_eval_loss": 1.4129048585891724,
+  "best_eval_loss": 1.4129048585891724,
+  "best_model_checkpoint": "/mnt/dataY/lmy/DSAA/assignment3/3.25/artifacts/backward_model/checkpoint-1000"
 }

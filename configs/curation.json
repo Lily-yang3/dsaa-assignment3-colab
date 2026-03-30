@@ -5,8 +5,8 @@
   "input_path": "artifacts/augmentation/candidate_pairs.jsonl",
   "output_curated_path": "artifacts/curation/curated_pairs.jsonl",
   "output_rejected_path": "artifacts/curation/rejected_pairs.jsonl",
-  "score_threshold": 4,
-  "min_curated_size": 50,
+  "score_threshold": 3,
+  "min_curated_size": 45,
   "show_examples": 5,
   "push_to_hub": false,
   "hub_dataset_id": "",
@@ -18,8 +18,8 @@
     "attn_implementation": null
   },
   "generation": {
-    "batch_size": 2,
-    "max_new_tokens": 80,
+    "batch_size": 4,
+    "max_new_tokens": 64,
     "temperature": 0.0,
     "top_p": 1.0,
     "do_sample": false,

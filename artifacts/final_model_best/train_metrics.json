@@ -1,10 +1,20 @@
 {
-  "train_runtime": 70.8075,
-  "train_samples_per_second": 1.271,
-  "train_steps_per_second": 0.339,
-  "total_flos": 193496981925888.0,
-  "train_loss": 2.307002584139506,
-  "epoch": 2.0,
-  "train_examples": 45,
-  "val_examples": 5
+  "train_runtime": 276.652,
+  "train_samples_per_second": 3.383,
+  "train_steps_per_second": 0.868,
+  "total_flos": 385673472307200.0,
+  "train_loss": 2.240681403023856,
+  "epoch": 7.0,
+  "train_examples": 39,
+  "val_examples": 6,
+  "eval_loss": 2.158275604248047,
+  "eval_runtime": 1.3171,
+  "eval_samples_per_second": 4.556,
+  "eval_steps_per_second": 4.556,
+  "last_logged_train_loss": 1.3847,
+  "best_logged_train_loss": 1.3847,
+  "last_logged_eval_loss": 2.158275604248047,
+  "best_logged_eval_loss": 2.158275604248047,
+  "best_eval_loss": 2.158275604248047,
+  "best_model_checkpoint": "/mnt/dataY/lmy/DSAA/assignment3/3.25/artifacts/final_model_best/checkpoint-40"
 }

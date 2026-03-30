@@ -4,9 +4,9 @@
   "dataset_name": "timdettmers/openassistant-guanaco",
   "dataset_split": "train",
   "train_subset": null,
-  "val_ratio": 0.02,
+  "val_ratio": 0.05,
   "max_seq_length": 512,
-  "max_target_tokens": 160,
+  "max_target_tokens": 128,
   "output_dir": "artifacts/backward_model",
   "push_to_hub": false,
   "hub_model_id": "",
@@ -19,9 +19,9 @@
     "attn_implementation": null
   },
   "lora": {
-    "r": 16,
-    "alpha": 32,
-    "dropout": 0.05,
+    "r": 32,
+    "alpha": 64,
+    "dropout": 0.1,
     "bias": "none",
     "target_modules": [
       "q_proj",
@@ -34,18 +34,22 @@
     ]
   },
   "training": {
-    "num_train_epochs": 1,
-    "per_device_train_batch_size": 1,
-    "per_device_eval_batch_size": 1,
-    "gradient_accumulation_steps": 16,
-    "learning_rate": 0.0002,
-    "weight_decay": 0.0,
-    "warmup_ratio": 0.03,
+    "num_train_epochs": 2,
+    "per_device_train_batch_size": 2,
+    "per_device_eval_batch_size": 2,
+    "gradient_accumulation_steps": 8,
+    "learning_rate": 0.00015,
+    "weight_decay": 0.01,
+    "warmup_ratio": 0.05,
     "lr_scheduler_type": "cosine",
-    "logging_steps": 10,
+    "logging_steps": 20,
     "save_steps": 100,
     "eval_steps": 100,
-    "save_total_limit": 2
+    "save_total_limit": 3,
+    "load_best_model_at_end": true,
+    "metric_for_best_model": "eval_loss",
+    "greater_is_better": false,
+    "early_stopping_patience": 3,
+    "early_stopping_threshold": 0.0
   }
 }
-
